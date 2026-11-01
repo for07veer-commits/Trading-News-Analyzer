@@ -11,12 +11,18 @@ st.set_page_config(page_title="Veer Market Scanner", page_icon="🌍", layout="w
 
 st.title("🌍 VEER MASTER: World Market News & Sector Impact")
 st.write("Live sentiment analysis for global economy & stock markets.")
+
+# 🔴 NAYA FEATURE: Live Refresh Button
+if st.button("🔄 Refresh Live News Now"):
+    st.cache_data.clear() # Cache clear karke turant nayi news layega
+
 st.divider()
 
-# News fetch karne ka function (Ab title ke sath link aur date bhi aayega)
-@st.cache_data(ttl=600)
+# News fetch karne ka function (Ab sirf taaza news aayegi aur har 1 minute mein update hogi)
+@st.cache_data(ttl=60)
 def fetch_market_news():
-    rss_url = "https://news.google.com/rss/search?q=global+economy+stock+market&hl=en-US&gl=US&ceid=US:en"
+    # Link mein 'when:1d' add kiya hai taaki sirf aaj ki news aaye
+    rss_url = "https://news.google.com/rss/search?q=global+economy+stock+market+when:1d&hl=en-US&gl=US&ceid=US:en"
     feed = feedparser.parse(rss_url)
     
     news_list = []
@@ -62,11 +68,10 @@ def analyze_sector_impact(news_list):
         if not impacted_sectors:
             impacted_sectors = ["Broad Market / Macro Economy"]
             
-        # Streamlit Expander ka use (Click karne par khulega)
+        # Streamlit Expander ka use
         with st.expander(f"{sentiment} | {headline}"):
             st.write(f"**🏢 Impact Sector:** {', '.join(impacted_sectors)}")
             st.write(f"**🕒 Time:** {news['published']}")
-            # Clickable link banane ke liye Markdown ka use
             st.markdown(f"**[🔗 Poori News Padhne Ke Liye Yahan Click Karein]({news['link']})**")
 
 # Script run karna
